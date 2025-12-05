@@ -24,6 +24,13 @@ namespace paint {
     p_t next(p_t) const override;
   };
   
+  struct VerticalLine: IDraw {
+    VerticalLine(p_t s, p_t e);
+    p_t start,end;
+    p_t begin() const override;
+    p_t next(p_t) const override;
+  };
+
   //Расширить заданный массив точками из очередной фигуры
   //-extend...
   size_t points(const IDraw& d, p_t** pts, size_t& s);
@@ -32,7 +39,7 @@ namespace paint {
   //Построить полотно (из фрейма получить количество столбцов и колонок)
   char * canvas(f_t fr, char fill);
   //Координаты точки перевести в координаты в двумерном массиве
-  void paint(char * cnv, f_t fr, p_t p, char fill);
+  void paintPts(char * cnv, f_t fr, p_t p, char fill);
   //Вывод двумерного массива на основе размеров определяемых фреймом
   void flush(std::ostream& os, const char* cnv, f_t fr);
 }
@@ -56,7 +63,7 @@ int main() {
     f_t fr = frame(pts, s);
     char * cnv = canvas(fr, '.');
     for (size_t i = 0; i<s; ++i){
-      paint(cnv, fr, pts[i], '#');
+      paintPts(cnv, fr, pts[i], '#');
     }
     delete[] cnv;
   }
@@ -79,6 +86,12 @@ paint::Dot::Dot(int x, int y):
   d{x,y}
 {}
 
+paint::VerticalLine::VerticalLine(p_t s, p_t e):
+  IDraw(),
+  start{s},
+  end{e}
+{}
+
 paint::p_t paint::Dot::begin() const{
   return d;
 }
@@ -88,6 +101,19 @@ paint::p_t paint::Dot::next(p_t prev) const{
     throw std::logic_error("Bad impl");
   }
   return d;
+}
+
+paint::p_t paint::VerticalLine::begin() const{
+  return start;
+}
+
+paint::p_t paint::VerticalLine::next(p_t prev) const{
+  if (prev == end){
+    return begin();
+  }
+  else{
+    return p_t{prev.x,prev.y+1};
+  }
 }
 
 bool paint::operator==(p_t a, p_t b){
