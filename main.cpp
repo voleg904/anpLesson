@@ -38,6 +38,13 @@ namespace paint {
     p_t next(p_t) const override;
   };
 
+  struct DiagonalLine: IDraw {
+    DiagonalLine(p_t s, p_t e);
+    p_t start,end;
+    p_t begin() const override;
+    p_t next(p_t) const override;
+  };
+
   //Расширить заданный массив точками из очередной фигуры
   //-extend...
   size_t points(const IDraw& d, p_t** pts, size_t& s);
@@ -105,6 +112,12 @@ paint::HorizontalLine::HorizontalLine(p_t s, p_t e):
   end{e}
 {}
 
+paint::DiagonalLine::DiagonalLine(p_t s, p_t e):
+  IDraw(),
+  start{s},
+  end{e}
+{}
+
 paint::p_t paint::Dot::begin() const{
   return d;
 }
@@ -139,6 +152,19 @@ paint::p_t paint::HorizontalLine::next(p_t prev) const{
   }
   else{
     return p_t{prev.x+1,prev.y};
+  }
+}
+
+paint::p_t paint::DiagonalLine::begin() const{
+  return start;
+}
+
+paint::p_t paint::DiagonalLine::next(p_t prev) const{
+  if (prev == end){
+    return begin();
+  }
+  else{
+    return p_t{prev.x+1,prev.y+1};
   }
 }
 
