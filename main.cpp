@@ -31,6 +31,13 @@ namespace paint {
     p_t next(p_t) const override;
   };
 
+  struct HorizontalLine: IDraw {
+    HorizontalLine(p_t s, p_t e);
+    p_t start,end;
+    p_t begin() const override;
+    p_t next(p_t) const override;
+  };
+
   //Расширить заданный массив точками из очередной фигуры
   //-extend...
   size_t points(const IDraw& d, p_t** pts, size_t& s);
@@ -92,6 +99,12 @@ paint::VerticalLine::VerticalLine(p_t s, p_t e):
   end{e}
 {}
 
+paint::HorizontalLine::HorizontalLine(p_t s, p_t e):
+  IDraw(),
+  start{s},
+  end{e}
+{}
+
 paint::p_t paint::Dot::begin() const{
   return d;
 }
@@ -116,6 +129,19 @@ paint::p_t paint::VerticalLine::next(p_t prev) const{
   }
 }
 
+paint::p_t paint::HorizontalLine::begin() const{
+  return start;
+}
+
+paint::p_t paint::HorizontalLine::next(p_t prev) const{
+  if (prev == end){
+    return begin();
+  }
+  else{
+    return p_t{prev.x+1,prev.y};
+  }
+}
+
 bool paint::operator==(p_t a, p_t b){
   return a.x == b.x && a.y == b.y;
 }
@@ -123,4 +149,3 @@ bool paint::operator==(p_t a, p_t b){
 bool paint::operator!=(p_t a, p_t b){
   return !(a==b);
 }
-
